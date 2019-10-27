@@ -3,9 +3,14 @@ import { render } from "react-dom";
 import Game from "./Game";
 
 import "./styles.css";
+import ErrorBoundary from "./Components/ErrorBoundary";
 
 function App() {
-  return <Game />;
+  return (
+    <ErrorBoundary>
+      <Game />
+    </ErrorBoundary>
+  );
 }
 
 const rootElement = document.getElementById("root");
