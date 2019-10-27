@@ -8,14 +8,18 @@ export interface GameStateSchema {
   states: {
     splashscreen: {};
     menu: {};
-    playing: {};
+    playing: {
+      states: {
+        idle: {};
+        active: {};
+      };
+    };
     gameover: {};
   };
 }
 
-export interface EVENT_AWARD_POINTS {
-  total: number;
-}
+export type EVENT_AWARD_POINTS = { type: "AWARD_POINTS"; total: number };
+
 export type GameEvent =
   | EVENT_AWARD_POINTS
   | { type: "START_NEW_GAME" }
@@ -32,18 +36,10 @@ const INITIAL_STATE = {
 };
 
 const playingStates = {
-  initial: "walk",
+  initial: "idle",
   states: {
-    idle: {
-      on: {
-        PED_COUNTDOWN: "wait"
-      }
-    },
-    active: {
-      on: {
-        PED_COUNTDOWN: "stop"
-      }
-    },
+    idle: {},
+    active: {},
     stop: {}
   }
 };
@@ -51,7 +47,7 @@ const playingStates = {
 export const gameMachine = Machine<GameContext, GameStateSchema, GameEvent>(
   {
     id: "game",
-    initial: "playing",
+    initial: "splashscreen",
     context: INITIAL_STATE,
     on: {
       EXIT_TO_MENU: {
@@ -59,22 +55,13 @@ export const gameMachine = Machine<GameContext, GameStateSchema, GameEvent>(
       }
     },
     states: {
-      win: {},
-      lose: {},
+      splashscreen: {},
+      menu: {},
       playing: {
-        entry: assign<GameContext>({
-          ...INITIAL_STATE
-        }),
-        on: {
-          "": [{ target: "gameover", cond: "gameIsOver" }],
-          AWARD_POINTS: {
-            actions: assign<GameContext>({
-              points: (context: GameContext, event: EVENT_AWARD_POINTS) =>
-                context.points + event.total
-            })
-          }
-        }
-      }
+        intitial: "idle",
+        ...playingStates
+      },
+      gameover: {}
     }
   },
   {
