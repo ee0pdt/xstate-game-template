@@ -3,16 +3,16 @@ import {
   send,
   assign,
   MachineConfig,
-  ActionFunctionMap
-} from "xstate";
-import { log } from "xstate/lib/actions";
+  ActionFunctionMap,
+} from 'xstate';
+import { log } from 'xstate/lib/actions';
 
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
 
 export enum PlayingStates {
-  Idle = "Idle",
-  Active = "Active"
+  Idle = 'Idle',
+  Active = 'Active',
 }
 
 export interface PlayingStatesSchema {
@@ -23,10 +23,10 @@ export interface PlayingStatesSchema {
 }
 
 export enum GameStates {
-  Splashscreen = "Splashscreen",
-  Menu = "Menu",
-  Playing = "Playing",
-  Gameover = "Gameover"
+  Splashscreen = 'Splashscreen',
+  Menu = 'Menu',
+  Playing = 'Playing',
+  Gameover = 'Gameover',
 }
 
 export interface GameStateSchema {
@@ -39,9 +39,9 @@ export interface GameStateSchema {
 }
 
 export enum GameEventType {
-  AwardPoints = "AWARD_POINTS",
-  StartNewGame = "START_NEW_GAME",
-  ExitToMenu = "EXIT_TO_MENU"
+  AwardPoints = 'AWARD_POINTS',
+  StartNewGame = 'START_NEW_GAME',
+  ExitToMenu = 'EXIT_TO_MENU',
 }
 
 export type EVENT_AWARD_POINTS = {
@@ -61,65 +61,65 @@ export type GameContext = {
 
 const INITIAL_STATE = {
   points: INITIAL_POINTS,
-  lives: INITIAL_LIVES
+  lives: INITIAL_LIVES,
 };
 
 const playingStates = {
   states: {
     [PlayingStates.Idle]: {},
-    [PlayingStates.Active]: {}
-  }
+    [PlayingStates.Active]: {},
+  },
 };
 
 const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
-  id: "game",
+  id: 'game',
   initial: GameStates.Splashscreen,
   context: INITIAL_STATE,
   on: {
     EXIT_TO_MENU: {
-      target: GameStates.Menu
-    }
+      target: GameStates.Menu,
+    },
   },
   states: {
     [GameStates.Splashscreen]: {
       after: {
-        1000: GameStates.Menu
-      }
+        1000: GameStates.Menu,
+      },
     },
     [GameStates.Menu]: {
       on: {
         [GameEventType.StartNewGame]: {
-          target: GameStates.Playing
-        }
-      }
+          target: GameStates.Playing,
+        },
+      },
     },
     [GameStates.Playing]: {
       initial: PlayingStates.Idle,
-      ...playingStates
+      ...playingStates,
     },
-    [GameStates.Gameover]: {}
-  }
+    [GameStates.Gameover]: {},
+  },
 };
 
 const gameActions: ActionFunctionMap<GameContext, GameEvent> = {
   awardPoints: assign<GameContext>({
     points: (context: GameContext, event: EVENT_AWARD_POINTS) =>
-      context.points + event.total
-  })
+      context.points + event.total,
+  }),
 };
 
 const gameGuards = {
   gameIsOver: (context: GameContext, event: GameEvent) => {
     return context.lives > 1;
-  }
+  },
 };
 
 export const gameMachine = Machine<GameContext, GameStateSchema, GameEvent>(
   gameConfig,
   {
     actions: gameActions,
-    guards: gameGuards
-  }
+    guards: gameGuards,
+  },
 );
 
 export default gameMachine;

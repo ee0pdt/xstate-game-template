@@ -1,9 +1,9 @@
-import * as React from "react";
-import { render } from "react-dom";
-import Game from "./Game";
+import * as React from 'react';
+import { render } from 'react-dom';
+import Game from './Game';
 
-import "./styles.css";
-import ErrorBoundary from "./Components/ErrorBoundary";
+import './styles.css';
+import ErrorBoundary from './Components/ErrorBoundary';
 
 function App() {
   return (
@@ -13,5 +13,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 render(<App />, rootElement);
