@@ -4,16 +4,18 @@ import { log } from "xstate/lib/actions";
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
 
+export interface PlayingStatesSchema {
+  states: {
+    idle: {};
+    active: {};
+  };
+}
+
 export interface GameStateSchema {
   states: {
     splashscreen: {};
     menu: {};
-    playing: {
-      states: {
-        idle: {};
-        active: {};
-      };
-    };
+    playing: PlayingStatesSchema;
     gameover: {};
   };
 }
@@ -36,7 +38,6 @@ const INITIAL_STATE = {
 };
 
 const playingStates = {
-  initial: "idle",
   states: {
     idle: {},
     active: {},
@@ -58,7 +59,7 @@ export const gameMachine = Machine<GameContext, GameStateSchema, GameEvent>(
       splashscreen: {},
       menu: {},
       playing: {
-        intitial: "idle",
+        initial: "idle",
         ...playingStates
       },
       gameover: {}
@@ -73,7 +74,6 @@ export const gameMachine = Machine<GameContext, GameStateSchema, GameEvent>(
     },
     guards: {
       gameIsOver: (context: GameContext, event: GameEvent) => {
-        // check if player won
         return context.lives > 1;
       }
     }
