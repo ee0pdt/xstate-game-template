@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useMachine } from "@xstate/react";
-import gameMachine, { GameStates } from "./GameMachine";
+import appMachine, { AppStates } from "./AppMachine";
 import Splashscreen from "./Components/Splashscreen";
 import Menu from "./Components/Menu";
-import Playing from "./Components/Playing";
+import Game from "../Game/Game";
 
-export const Game = () => {
-  const [current, send] = useMachine(gameMachine);
+export const App = () => {
+  const [current, send] = useMachine(appMachine);
 
   // console.table(current.value);
   const state =
@@ -15,16 +15,14 @@ export const Game = () => {
       : current.value;
 
   switch (state) {
-    case GameStates.Splashscreen: {
+    case AppStates.Splashscreen: {
       return <Splashscreen />;
     }
-    case GameStates.Menu: {
+    case AppStates.Menu: {
       return <Menu send={send} />;
     }
-    case GameStates.Playing: {
-      return (
-        <Playing gameState={current.value[GameStates.Playing]} send={send} />
-      );
+    case AppStates.Playing: {
+      return <Game sendToApp={send} />;
     }
     default: {
       return <p>State not known</p>;
@@ -32,4 +30,4 @@ export const Game = () => {
   }
 };
 
-export default Game;
+export default App;

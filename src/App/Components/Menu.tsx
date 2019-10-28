@@ -1,18 +1,15 @@
 import * as React from "react";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorBoundary from "../../Shared/ErrorBoundary";
 import { Button } from "@material-ui/core";
-import { GameEventType } from "../GameMachine";
+import { AppEventType } from "../AppMachine";
 
 interface IMenuProps {
-  send: (event: GameEventType) => void;
+  send: (event: AppEventType) => void;
 }
 
 export const Menu = ({ send }: IMenuProps) => (
   <ErrorBoundary>
-    <Button
-      variant="contained"
-      onClick={() => send(GameEventType.StartNewGame)}
-    >
+    <Button variant="contained" onClick={() => send(AppEventType.StartNewGame)}>
       Start
     </Button>
   </ErrorBoundary>
