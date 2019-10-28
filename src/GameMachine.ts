@@ -4,6 +4,9 @@ const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
 const SPLASHSCREEN_SHOW_TIME = 1000;
 
+const IDLE_TIME = 1000;
+const ACTIVE_TIME = 3000;
+
 export enum PlayingStates {
   Idle = "Idle",
   Active = "Active"
@@ -20,12 +23,12 @@ const playingStates = {
   states: {
     [PlayingStates.Idle]: {
       after: {
-        100: PlayingStates.Active
+        [IDLE_TIME]: PlayingStates.Active
       }
     },
     [PlayingStates.Active]: {
       after: {
-        100: PlayingStates.Idle
+        [ACTIVE_TIME]: PlayingStates.Idle
       }
     }
   }

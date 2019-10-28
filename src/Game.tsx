@@ -1,12 +1,9 @@
 import * as React from "react";
 import { useMachine } from "@xstate/react";
-import gameMachine, {
-  GameContext,
-  GameStates,
-  PlayingStates
-} from "./GameMachine";
+import gameMachine, { GameStates } from "./GameMachine";
 import Splashscreen from "./Components/Splashscreen";
 import Menu from "./Components/Menu";
+import Playing from "./Components/Playing";
 
 export const Game = () => {
   const [current, send] = useMachine(gameMachine);
@@ -25,7 +22,9 @@ export const Game = () => {
       return <Menu send={send} />;
     }
     case GameStates.Playing: {
-      return <p>Now in playing state</p>;
+      return (
+        <Playing gameState={current.value[GameStates.Playing]} send={send} />
+      );
     }
     default: {
       return <p>State not known</p>;
