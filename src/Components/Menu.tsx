@@ -9,7 +9,10 @@ interface IMenuProps {
 
 export const Menu = ({ send }: IMenuProps) => (
   <ErrorBoundary>
-    <Button variant="outlined" onClick={() => send(GameEventType.StartNewGame)}>
+    <Button
+      variant="contained"
+      onClick={() => send(GameEventType.StartNewGame)}
+    >
       Start
     </Button>
   </ErrorBoundary>

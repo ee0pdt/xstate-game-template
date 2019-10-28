@@ -1,5 +1,6 @@
 import * as React from "react";
 import { GameEventType, PlayingStates } from "../GameMachine";
+import Button from "@material-ui/core/Button";
 
 interface IPlayingProps {
   gameState: PlayingStates;
@@ -25,6 +26,12 @@ export const Playing = ({ gameState, send }: IPlayingProps) => {
   return (
     <div>
       <PlayingStateIndicator gameState={gameState} />
+      <Button
+        variant="contained"
+        onClick={() => send(GameEventType.ExitToMenu)}
+      >
+        Exit to Menu
+      </Button>
     </div>
   );
 };

@@ -76,6 +76,17 @@ const INITIAL_CONTEXT = {
   lives: INITIAL_LIVES
 };
 
+export enum GameActionType {
+  AwardPoints = "AwardPoints"
+}
+
+const gameActions: ActionFunctionMap<GameContext, GameEvent> = {
+  [GameActionType.AwardPoints]: assign<GameContext>({
+    points: (context: GameContext, event: EVENT_AWARD_POINTS) =>
+      context.points + event.total
+  })
+};
+
 const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
   id: "game",
   initial: GameStates.Splashscreen,
@@ -99,22 +110,14 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
       on: {
         [GameEventType.ExitToMenu]: {
           target: GameStates.Menu
+        },
+        [GameEventType.AwardPoints]: {
+          actions: [GameActionType.AwardPoints]
         }
       }
     },
     [GameStates.Gameover]: {}
   }
-};
-
-export enum GameActionType {
-  AwardPoints = "AwardPoints"
-}
-
-const gameActions: ActionFunctionMap<GameContext, GameEvent> = {
-  [GameActionType.AwardPoints]: assign<GameContext>({
-    points: (context: GameContext, event: EVENT_AWARD_POINTS) =>
-      context.points + event.total
-  })
 };
 
 const gameGuards = {
