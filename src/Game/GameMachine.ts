@@ -3,7 +3,7 @@ import { Machine, assign, MachineConfig, ActionFunctionMap } from "xstate";
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
 
-const IDLE_TIME = 1000;
+const IDLE_TIME = 500;
 const ACTIVE_TIME = 3000;
 
 export enum GameStates {
@@ -59,6 +59,11 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
     [GameStates.Idle]: {
       after: {
         [IDLE_TIME]: GameStates.Active
+      },
+      on: {
+        [GameEventType.AwardPoints]: {
+          actions: [GameActionType.AwardPoints]
+        }
       }
     },
     [GameStates.Active]: {
