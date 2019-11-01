@@ -3,7 +3,7 @@ import { Machine, assign, MachineConfig, ActionFunctionMap } from "xstate";
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
 
-const IDLE_TIME = 500;
+const IDLE_TIME = 800;
 const ACTIVE_TIME = 3000;
 const EXPLODE_TIME = 1000;
 

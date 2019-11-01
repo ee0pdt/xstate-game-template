@@ -6,7 +6,6 @@ import { AppEventType } from "../App/AppMachine";
 import { Canvas, useFrame, ReactThreeFiber } from "react-three-fiber";
 import { useRef } from "react";
 import { Mesh } from "three";
-import Explosion from "./Components/Explosion";
 
 interface IGameProps {}
 
@@ -17,10 +16,10 @@ export const GameStateIndicator = ({
 }) => {
   switch (gameState) {
     case GameStates.Idle: {
-      return <p>idle</p>;
+      return <p>🔵</p>;
     }
     default: {
-      return <p>active</p>;
+      return <p>🔴</p>;
     }
   }
 };
@@ -33,12 +32,17 @@ interface IThingProps {
 
 function Thing({ active, explode, onClick }: IThingProps) {
   const ref = useRef<ReactThreeFiber.Object3DNode<Mesh, typeof Mesh>>();
-  useFrame(() => {
+  useFrame((state, delta) => {
+    ref.current.position.x = Math.sin(state.clock.elapsedTime) * 2;
+    ref.current.position.y = Math.cos(state.clock.elapsedTime) * 2;
+
     if (active) {
-      return (ref.current.rotation.x = ref.current.rotation.y += 0.02);
+      ref.current.rotation.x = ref.current.rotation.y += 0.02;
+      return;
     }
     if (explode) {
-      return (ref.current.rotation.x = ref.current.rotation.y += 0.2);
+      ref.current.rotation.x = ref.current.rotation.y += 0.2;
+      return;
     }
     return null;
   });
