@@ -10,6 +10,7 @@ const EXPLODE_TIME = 1000;
 export enum GameStates {
   Idle = "Idle",
   Active = "Active",
+  Success = "Success",
   Explode = "Explode",
   Gameover = "Gameover",
 }
@@ -18,6 +19,7 @@ export interface GameStateSchema {
   states: {
     [GameStates.Idle]: {};
     [GameStates.Active]: {};
+    [GameStates.Success]: {};
     [GameStates.Explode]: {};
     [GameStates.Gameover]: {};
   };
@@ -75,7 +77,7 @@ const gameGuards = {
 
 const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
   id: "game",
-  initial: GameStates.Idle,
+  initial: GameStates.Active,
   context: INITIAL_CONTEXT,
   states: {
     [GameStates.Idle]: {
@@ -84,9 +86,8 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
       },
       on: {
         [GameEventType.Clicked]: {
-          actions: [GameActionType.AwardPoints],
+          target: [GameStates.Success],
         },
-        "": [{ target: GameStates.Gameover, cond: GameGuardType.GameIsOver }],
       },
     },
     [GameStates.Active]: {
@@ -94,6 +95,7 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
         [ACTIVE_TIME]: GameStates.Idle,
       },
       on: {
+        "": [{ target: GameStates.Gameover, cond: GameGuardType.GameIsOver }],
         [GameEventType.Clicked]: {
           target: GameStates.Explode,
         },
@@ -101,9 +103,15 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
     },
     [GameStates.Explode]: {
       after: {
-        [EXPLODE_TIME]: GameStates.Idle,
+        [EXPLODE_TIME]: GameStates.Active,
       },
       entry: [GameActionType.LoseLife],
+    },
+    [GameStates.Success]: {
+      after: {
+        [EXPLODE_TIME]: GameStates.Active,
+      },
+      entry: [GameActionType.AwardPoints],
     },
     [GameStates.Gameover]: {},
   },
