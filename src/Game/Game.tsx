@@ -6,11 +6,12 @@ import { AppEventType } from "../App/AppMachine";
 import { Canvas, useFrame, ReactThreeFiber } from "react-three-fiber";
 import { useRef } from "react";
 import { Mesh } from "three";
+import Explosion from "./Components/Explosion";
 
 interface IGameProps {}
 
 export const GameStateIndicator = ({
-  gameState
+  gameState,
 }: {
   gameState: GameStates;
 }) => {
@@ -24,14 +25,37 @@ export const GameStateIndicator = ({
   }
 };
 
-function Thing({ active, onClick }: { active: Boolean; onClick: () => void }) {
+interface IThingProps {
+  active: Boolean;
+  explode: Boolean;
+  onClick: () => void;
+}
+
+function Thing({ active, explode, onClick }: IThingProps) {
   const ref = useRef<ReactThreeFiber.Object3DNode<Mesh, typeof Mesh>>();
   useFrame(() => {
     if (active) {
       return (ref.current.rotation.x = ref.current.rotation.y += 0.02);
     }
+    if (explode) {
+      return (ref.current.rotation.x = ref.current.rotation.y += 0.2);
+    }
     return null;
   });
+
+  if (explode) {
+    return (
+      <mesh
+        ref={ref}
+        onClick={onClick}
+        onPointerOver={e => console.log("hover")}
+        onPointerOut={e => console.log("unhover")}
+      >
+        <boxBufferGeometry attach="geometry" args={[3, 3, 3]} />
+        <meshNormalMaterial attach="material" />
+      </mesh>
+    );
+  }
 
   return (
     <mesh
@@ -53,15 +77,20 @@ export const Game = ({ sendToApp }) => {
     <div>
       <GameStateIndicator gameState={current.value as GameStates} />
       <p>Points: {current.context.points}</p>
-      <Canvas style={{ height: 400 }}>
-        <Thing
-          active={current.value === GameStates.Active}
-          onClick={() => {
-            console.log("clicked");
-            send({ type: GameEventType.AwardPoints, total: 10 });
-          }}
-        />
-      </Canvas>
+      <p>Lives: {current.context.lives}</p>
+      {current.value === GameStates.Gameover ? (
+        <h1>GAME OVER</h1>
+      ) : (
+        <Canvas style={{ height: 400 }}>
+          <Thing
+            explode={current.value === GameStates.Explode}
+            active={current.value === GameStates.Active}
+            onClick={() => {
+              send({ type: GameEventType.Clicked });
+            }}
+          />
+        </Canvas>
+      )}
       <Button
         variant="contained"
         onClick={() => sendToApp(AppEventType.ExitToMenu)}
