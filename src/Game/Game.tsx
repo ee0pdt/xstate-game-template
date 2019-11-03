@@ -4,7 +4,7 @@ import gameMachine, { GameEventType, GameStates } from "./GameMachine";
 import { useMachine } from "@xstate/react";
 import { AppEventType } from "../App/AppMachine";
 import { Canvas } from "react-three-fiber";
-import Thing from "../Thing/Thing";
+import Thing, { ThingModel } from "../Thing/Thing";
 
 export const GameStateIndicator = ({
   gameState,
@@ -24,6 +24,12 @@ export const GameStateIndicator = ({
 export const Game = ({ sendToApp }) => {
   const [current, send] = useMachine(gameMachine);
 
+  const thingModel = {
+    id: 1,
+    type: "cube",
+    position: { x: 1, y: 1, z: 1 },
+  } as ThingModel;
+
   return (
     <div>
       <GameStateIndicator gameState={current.value as GameStates} />
@@ -39,6 +45,7 @@ export const Game = ({ sendToApp }) => {
             onClick={() => {
               send({ type: GameEventType.Clicked });
             }}
+            model={thingModel}
           />
         </Canvas>
       )}
