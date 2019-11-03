@@ -1,4 +1,5 @@
 import { Machine, assign, MachineConfig, ActionFunctionMap } from "xstate";
+import { ReactThreeFiber } from "react-three-fiber";
 
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
@@ -41,14 +42,26 @@ export type GameEvent =
   | { type: GameEventType.ExitToMenu }
   | { type: GameEventType.Clicked };
 
+export interface ThingModel {
+  id: number;
+  type: string;
+  position: ReactThreeFiber.Vector3;
+}
+
 export type GameContext = {
   points: number;
   lives: number;
+  things: { [key: number]: ThingModel };
 };
 
 const INITIAL_CONTEXT = {
   points: INITIAL_POINTS,
   lives: INITIAL_LIVES,
+  things: {
+    1: { id: 1, type: "cube", position: [0.1, 0, 0] },
+    2: { id: 2, type: "cube", position: [0, 0.1, 0] },
+    3: { id: 3, type: "cube", position: [0, 0, 0.1] },
+  },
 };
 
 export enum GameActionType {
