@@ -1,25 +1,16 @@
 import { Machine, assign, MachineConfig, ActionFunctionMap } from "xstate";
-import { ThingEventType } from "../Thing/ThingMachine";
 
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
 
-const IDLE_TIME = 800;
-const ACTIVE_TIME = 3000;
-const EXPLODE_TIME = 1000;
-
 export enum GameStates {
   Active = "Active",
-  Success = "Success",
-  Explode = "Explode",
   Gameover = "Gameover",
 }
 
 export interface GameStateSchema {
   states: {
     [GameStates.Active]: {};
-    [GameStates.Success]: {};
-    [GameStates.Explode]: {};
     [GameStates.Gameover]: {};
   };
 }
@@ -82,35 +73,16 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
   initial: GameStates.Active,
   context: INITIAL_CONTEXT,
   states: {
-    // [GameStates.Idle]: {
-    //   after: {
-    //     [IDLE_TIME]: GameStates.Active,
-    //   },
-    //   on: {
-    //     [ThingEventType.Clicked]: {
-    //       target: [GameStates.Success],
-    //     },
-    //   },
-    // },
     [GameStates.Active]: {
       on: {
         "": [{ target: GameStates.Gameover, cond: GameGuardType.GameIsOver }],
         [GameEventType.AwardPoints]: {
           actions: [GameActionType.AwardPoints],
         },
+        [GameEventType.LoseLife]: {
+          actions: [GameActionType.LoseLife],
+        },
       },
-    },
-    [GameStates.Explode]: {
-      after: {
-        [EXPLODE_TIME]: GameStates.Active,
-      },
-      entry: [GameActionType.LoseLife],
-    },
-    [GameStates.Success]: {
-      after: {
-        [EXPLODE_TIME]: GameStates.Active,
-      },
-      entry: [GameActionType.AwardPoints],
     },
     [GameStates.Gameover]: {},
   },

@@ -1,16 +1,6 @@
-import {
-  Machine,
-  assign,
-  MachineConfig,
-  ActionFunctionMap,
-  SingleOrArray,
-  OmniEvent,
-  State,
-} from "xstate";
-import { GameEventType, GameEvent, GameContext } from "../Game/GameMachine";
+import { Machine } from "xstate";
+import { GameEventType } from "../Game/GameMachine";
 
-const IDLE_TIME = 800;
-const ACTIVE_TIME = 3000;
 const EXPLODE_TIME = 1000;
 
 export enum ThingStates {
@@ -44,7 +34,7 @@ export enum ThingActionType {
   LoseLife = "LoseLife",
 }
 
-export const thingMachine = sendToGame =>
+export const thingMachine = (sendToGame, activeTime: number) =>
   Machine<ThingContext, ThingStateSchema, ThingEvent>({
     id: "thing",
     initial: ThingStates.Active,
@@ -52,7 +42,7 @@ export const thingMachine = sendToGame =>
     states: {
       [ThingStates.Idle]: {
         after: {
-          [IDLE_TIME]: ThingStates.Active,
+          [Math.random() * 5000 + 2000]: ThingStates.Active,
         },
         on: {
           [ThingEventType.Clicked]: {
@@ -63,7 +53,7 @@ export const thingMachine = sendToGame =>
       },
       [ThingStates.Active]: {
         after: {
-          [ACTIVE_TIME]: ThingStates.Idle,
+          [activeTime]: ThingStates.Idle,
         },
         on: {
           [ThingEventType.Clicked]: {
@@ -86,7 +76,7 @@ export const thingMachine = sendToGame =>
           () => console.log("success sending award points"),
           () => console.log(sendToGame),
           () =>
-            sendToGame.sendToGame({
+            sendToGame({
               type: GameEventType.AwardPoints,
               total: 10,
             }),
