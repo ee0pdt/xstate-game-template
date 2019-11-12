@@ -1,4 +1,5 @@
 import { Machine, assign, MachineConfig, ActionFunctionMap } from "xstate";
+import { ThingEventType } from "../Thing/ThingMachine";
 
 const INITIAL_POINTS = 0;
 const INITIAL_LIVES = 3;
@@ -8,7 +9,6 @@ const ACTIVE_TIME = 3000;
 const EXPLODE_TIME = 1000;
 
 export enum GameStates {
-  Idle = "Idle",
   Active = "Active",
   Success = "Success",
   Explode = "Explode",
@@ -17,7 +17,6 @@ export enum GameStates {
 
 export interface GameStateSchema {
   states: {
-    [GameStates.Idle]: {};
     [GameStates.Active]: {};
     [GameStates.Success]: {};
     [GameStates.Explode]: {};
@@ -29,6 +28,7 @@ export enum GameEventType {
   AwardPoints = "AwardPoints",
   ExitToMenu = "ExitToMenu",
   Clicked = "Clicked",
+  LoseLife = "LoseLife",
 }
 
 export type EVENT_AWARD_POINTS = {
@@ -39,7 +39,8 @@ export type EVENT_AWARD_POINTS = {
 export type GameEvent =
   | EVENT_AWARD_POINTS
   | { type: GameEventType.ExitToMenu }
-  | { type: GameEventType.Clicked };
+  | { type: GameEventType.Clicked }
+  | { type: GameEventType.LoseLife };
 
 export type GameContext = {
   points: number;
@@ -60,6 +61,7 @@ const gameActions: ActionFunctionMap<GameContext, GameEvent> = {
   [GameActionType.AwardPoints]: assign<GameContext>({
     points: (context: GameContext, event: GameEvent) => context.points + 10,
   }),
+
   [GameActionType.LoseLife]: assign<GameContext>({
     lives: (context: GameContext) => context.lives - 1,
   }),
@@ -80,24 +82,21 @@ const gameConfig: MachineConfig<GameContext, GameStateSchema, GameEvent> = {
   initial: GameStates.Active,
   context: INITIAL_CONTEXT,
   states: {
-    [GameStates.Idle]: {
-      after: {
-        [IDLE_TIME]: GameStates.Active,
-      },
-      on: {
-        [GameEventType.Clicked]: {
-          target: [GameStates.Success],
-        },
-      },
-    },
+    // [GameStates.Idle]: {
+    //   after: {
+    //     [IDLE_TIME]: GameStates.Active,
+    //   },
+    //   on: {
+    //     [ThingEventType.Clicked]: {
+    //       target: [GameStates.Success],
+    //     },
+    //   },
+    // },
     [GameStates.Active]: {
-      after: {
-        [ACTIVE_TIME]: GameStates.Idle,
-      },
       on: {
         "": [{ target: GameStates.Gameover, cond: GameGuardType.GameIsOver }],
-        [GameEventType.Clicked]: {
-          target: GameStates.Explode,
+        [GameEventType.AwardPoints]: {
+          actions: [GameActionType.AwardPoints],
         },
       },
     },

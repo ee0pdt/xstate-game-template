@@ -46,6 +46,7 @@ export const Game = ({ sendToApp }) => {
               send({ type: GameEventType.Clicked });
             }}
             model={thingModel}
+            sendToGame={send}
           />
         </Canvas>
       )}
